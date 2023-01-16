@@ -1,10 +1,13 @@
 using api.Models;
+using api.Repositorios.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddScoped<IServico, ClienteRepositorio>(); //resolver a dependencia //quando eu quiser salvar em memória, será dessa forma
+//builder.Services.AddScoped<IServico, ClienteRepositorioMySql>(); //quando eu quiser salvar em mysql será dessa forma
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -24,10 +27,5 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-
-ClienteRepositorio.Instancia().Lista.Add(new Cliente { Id = 1, Nome = "Dani"});
-ClienteRepositorio.Instancia().Lista.Add(new Cliente { Id = 2, Nome = "Bea" });
-ClienteRepositorio.Instancia().Lista.Add(new Cliente { Id = 3, Nome = "Leo" }
-);
 
 app.Run();

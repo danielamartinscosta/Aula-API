@@ -1,5 +1,6 @@
 using api.Models;
 using Microsoft.AspNetCore.Mvc;
+using api.Repositorios.Interface;
 
 
 namespace api.Controllers;
@@ -7,6 +8,14 @@ namespace api.Controllers;
 [Route("clientes")] //rota
 public class ClientesController : ControllerBase
 {
+
+    private IServico _servico; //esse servico vai receber por injeção de dependencia no controlador
+
+    public ClientesController(IServico servico)
+    {
+        _servico = servico;
+
+    }
     // GET: Clientes
     [Route("")] //complemento da Rota ex. se eu digitar clientes + nada (pq tá vazio""), vem para a rota de clientes
     [HttpGet]
@@ -15,7 +24,7 @@ public class ClientesController : ControllerBase
     public IActionResult Index()
     {
 
-        var clientes = ClienteRepositorio.Instancia().Lista;
+        var clientes = _servico.Todos();
         return StatusCode(200, clientes);
 
 
@@ -26,7 +35,7 @@ public class ClientesController : ControllerBase
     [HttpGet("{id}")]
     public IActionResult Details([FromRoute] int id)
     {
-        var cliente = ClienteRepositorio.Instancia().Lista.Find(c => c.Id == id);
+        var cliente = _servico.Todos().Find(c => c.Id == id);
 
         return StatusCode(200, cliente);
     }
@@ -39,7 +48,7 @@ public class ClientesController : ControllerBase
     //[ValidateAntiForgeryToken] //essa validação é usanda quando se trabalha com formulario
     public IActionResult Create([FromBody] Cliente cliente)
     {
-        ClienteRepositorio.Instancia().Lista.Add(cliente);
+        _servico.Incluir(cliente);
         return StatusCode(201, cliente);
     }
 
@@ -58,24 +67,7 @@ public class ClientesController : ControllerBase
             });
         }
 
-        var clienteDb = ClienteRepositorio.Instancia().Lista.Find(c => c.Id == id);
-
-        if (clienteDb is null)
-        {
-            return StatusCode(404, new
-            {
-
-                Mensagem = "Cliente não encontrado"
-
-            });
-
-        }
-
-
-        clienteDb.Nome = cliente.Nome;
-        clienteDb.Endereco = cliente.Endereco;
-        clienteDb.Telefone = cliente.Telefone;
-        clienteDb.Email = cliente.Email;
+        var clienteDb = _servico.Atualizar(cliente);
 
         return StatusCode(200, clienteDb);
 
@@ -85,7 +77,7 @@ public class ClientesController : ControllerBase
     [HttpDelete("{id}")]
     public IActionResult Delete([FromRoute] int id)
     {
-        var clienteDb = ClienteRepositorio.Instancia().Lista.Find(c => c.Id == id);
+        var clienteDb = _servico.Todos().Find(c => c.Id == id);
 
         if (clienteDb is null)
         {
@@ -97,9 +89,8 @@ public class ClientesController : ControllerBase
             });
 
         }
-        ClienteRepositorio.Instancia().Lista.Remove(clienteDb);
+        _servico.Apagar(clienteDb);
 
-        ClienteRepositorio.Instancia().Lista.RemoveAll(o=> o.Id == id);
         return RedirectToAction(nameof(Index));
     }
 
