@@ -1,7 +1,8 @@
 using api.Models;
 using Microsoft.AspNetCore.Mvc;
 using api.Repositorios.Interface;
-
+using api.DTOs;
+using api.Servicos;
 
 namespace api.Controllers;
 
@@ -46,8 +47,9 @@ public class ClientesController : ControllerBase
     // POST: Clientes
     [HttpPost("")]
     //[ValidateAntiForgeryToken] //essa validação é usanda quando se trabalha com formulario
-    public async Task<IActionResult> Create([FromBody] Cliente cliente)
+    public async Task<IActionResult> Create([FromBody] ClienteDTO clienteDTO)
     {
+        var cliente = BuilderServico<Cliente>.Builder(clienteDTO);
         await _servico.IncluirAsync(cliente);
         return StatusCode(201, cliente);
     }
