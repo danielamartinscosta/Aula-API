@@ -5,9 +5,9 @@ namespace api.Repositorios.Interface;
 
 public interface IServico
 {
-    List<Cliente> Todos();
+    Task<List<Cliente>> TodosAsync();
 
-    void Incluir(Cliente cliente);
-    Cliente Atualizar(Cliente cliente);
-    void Apagar(Cliente cliente);
+    Task IncluirAsync(Cliente cliente);
+    Task<Cliente> AtualizarAsync(Cliente cliente);
+    Task ApagarAsync(Cliente cliente);
 }

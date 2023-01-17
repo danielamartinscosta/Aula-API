@@ -21,10 +21,10 @@ public class ClientesController : ControllerBase
     [HttpGet]
 
     //[HttpGet("")] // o item acima pode ser represantado assim também
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
 
-        var clientes = _servico.Todos();
+        var clientes = await  _servico.TodosAsync();
         return StatusCode(200, clientes);
 
 
@@ -33,9 +33,9 @@ public class ClientesController : ControllerBase
     // com a rota de cima + a rota de baixo, mostra detalhes do cliente. Ex: clientes/id
 
     [HttpGet("{id}")]
-    public IActionResult Details([FromRoute] int id)
+    public async Task<IActionResult> Details([FromRoute] int id)
     {
-        var cliente = _servico.Todos().Find(c => c.Id == id);
+        var cliente = (await _servico.TodosAsync()).Find(c => c.Id == id);
 
         return StatusCode(200, cliente);
     }
@@ -46,9 +46,9 @@ public class ClientesController : ControllerBase
     // POST: Clientes
     [HttpPost("")]
     //[ValidateAntiForgeryToken] //essa validação é usanda quando se trabalha com formulario
-    public IActionResult Create([FromBody] Cliente cliente)
+    public async Task<IActionResult> Create([FromBody] Cliente cliente)
     {
-        _servico.Incluir(cliente);
+        await _servico.IncluirAsync(cliente);
         return StatusCode(201, cliente);
     }
 
@@ -56,7 +56,7 @@ public class ClientesController : ControllerBase
 
     // PUT: Clientes/5
     [HttpPut("{id}")]
-    public IActionResult Update([FromRoute] int id, [FromBody] Cliente cliente)
+    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] Cliente cliente)
     {
         if (id != cliente.Id)
         {
@@ -67,7 +67,7 @@ public class ClientesController : ControllerBase
             });
         }
 
-        var clienteDb = _servico.Atualizar(cliente);
+        var clienteDb = await _servico.AtualizarAsync(cliente);
 
         return StatusCode(200, clienteDb);
 
@@ -75,9 +75,9 @@ public class ClientesController : ControllerBase
 
     // POST: Clientes/5
     [HttpDelete("{id}")]
-    public IActionResult Delete([FromRoute] int id)
+    public async Task<IActionResult> Delete([FromRoute] int id)
     {
-        var clienteDb = _servico.Todos().Find(c => c.Id == id);
+        var clienteDb = (await _servico.TodosAsync()).Find(c => c.Id == id);
 
         if (clienteDb is null)
         {
@@ -89,9 +89,9 @@ public class ClientesController : ControllerBase
             });
 
         }
-        _servico.Apagar(clienteDb);
+        await _servico.ApagarAsync(clienteDb);
 
-        return RedirectToAction(nameof(Index));
+        return StatusCode(204);
     }
 
 
