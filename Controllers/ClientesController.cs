@@ -100,7 +100,7 @@ public class ClientesController : ControllerBase
         ClienteRepositorio.Instancia().Lista.Remove(clienteDb);
 
         ClienteRepositorio.Instancia().Lista.RemoveAll(o=> o.Id == id);
-        return RedirectToAction(nameof(Index));
+        return StatusCode(204);
     }
 
 
